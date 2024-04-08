@@ -2,7 +2,15 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in sql_tools.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+group :development, :test do
+  gem "debug", "~> 1.0"
+  gem "rake", "~> 13.0"
+end
+
+group :test do
+  gem "minitest", "~> 5.0"
+  gem "minitest-focus", "~> 1.3"
+  gem "minitest-reporters", "~> 1.6"
+end
