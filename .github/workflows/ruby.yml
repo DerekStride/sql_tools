@@ -19,6 +19,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: build and install tree-sitter
+      run: |
+        git clone https://github.com/tree-sitter/tree-sitter
+        cd tree-sitter
+        git checkout tags/v0.22.6
+        make
+        sudo make install
+        sudo rm /usr/local/lib/libtree-sitter.a
+    - name: ldconfig
+      if: ${{ matrix.platform.os == 'ubuntu' }}
+      run: |
+        sudo ldconfig -v
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
