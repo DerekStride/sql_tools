@@ -28,7 +28,6 @@ jobs:
         sudo make install
         sudo rm /usr/local/lib/libtree-sitter.a
     - name: ldconfig
-      if: ${{ matrix.platform.os == 'ubuntu' }}
       run: |
         sudo ldconfig -v
     - name: Set up Ruby
