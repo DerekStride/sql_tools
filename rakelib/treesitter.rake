@@ -12,7 +12,11 @@ namespace :treesitter do
     repo_dir = "tree-sitter-sql-#{repo_sha}"
 
     parser_so = File.join(tmp_dir, repo_dir, "parser.so")
-    target_sql = File.join(app_root, "treesitter", "sql.so")
+    target_sql = if RbConfig::CONFIG["host_os"] =~ /mac|darwin/
+      File.join(app_root, "treesitter", "sql.dylib")
+    else
+      File.join(app_root, "treesitter", "sql.so")
+    end
 
     next if [parser_so, target_sql].all? { |f| File.exist?(f) }
 
