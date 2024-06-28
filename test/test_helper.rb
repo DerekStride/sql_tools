@@ -16,10 +16,7 @@ TreeStand.configure do
 end
 
 module TreeStandHelper
-  def query_from_sql(source) = visit_tree(parse(source))
-  def visit_tree(tree) = SqlTools::QueryVisitor.new(tree.root_node).visit.query
-  def parse(source) = parser.parse_string(source)
-  def parser = @parser ||= TreeStand::Parser.new("sql")
+  def query_from_sql(sql) = SqlTools.query_from_tree(SqlTools.tree_from_sql(sql))
 end
 
 module Minitest

@@ -1,34 +1,47 @@
 # SqlTools
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sql_tools`. To experiment with that code, run `bin/console` for an interactive prompt.
+SqlTools is a collection of tools for working with SQL ASTs. It's the intersection of
+[ruby_tree_sitter](https://github.com/faveod/ruby-tree-sitter/) &
+[tree-sitter-sql](https://github.com/derekstride/tree-sitter-sql), letting you parse SQL queries and transform them into
+semantic Ruby objects.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+If you're having trouble installing `ruby_tree_sitter` try installing the libraries for the latest supported version of
+libtree-sitter.
 
-Install the gem and add to the application's Gemfile by executing:
+```bash
+git clone https://github.com/tree-sitter/tree-sitter
+cd tree-sitter
+git checkout tags/v0.22.6
+make
+sudo make install
+```
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+To install the SQL parser run the rake task.
 
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```bash
+bundle exec rake treesitter:install
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+SqlTools.query_from_sql(<<~SQL)
+  SELECT id, name
+  FROM table_a
+  WHERE id > 10
+    AND id < 20
+SQL
+```
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/sql_tools. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/sql_tools/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/DerekStride/sql_tools. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/DerekStride/sql_tools/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -36,4 +49,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the SqlTools project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/sql_tools/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the SqlTools project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/DerekStride/sql_tools/blob/main/CODE_OF_CONDUCT.md).

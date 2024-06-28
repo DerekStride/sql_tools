@@ -3,7 +3,7 @@
 require "test_helper"
 
 module SqlTools
-  class ViewVisitorTest < Minitest::Test
+  class QueryVisitorTest < Minitest::Test
     def test_visit_select
       query = query_from_sql(<<~SQL)
         SELECT * FROM table
