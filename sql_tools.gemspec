@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Collection of tools for working with SQL ASTs."
   spec.homepage = "https://github.com/derekstride/sql_tools"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
