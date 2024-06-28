@@ -1,5 +1,5 @@
 module SqlTools
-  class View
+  class Query
     attr_accessor :select, :from
     attr_reader :common_table_expressions
 
