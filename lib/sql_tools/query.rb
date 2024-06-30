@@ -13,24 +13,33 @@ module SqlTools
           (term
             value: [
               (field
-                (object_reference name: (identifier) @table_alias)
+                (object_reference name: (identifier) @table_alias)?
                 name: (identifier) @column_name)
               (invocation) @invocation
-              (all_fields) @all_fields
+              (all_fields
+                (object_reference name: (identifier) @table_alias)?) @all_fields
             ]
             alias: (identifier)? @selection_name))
       QUERY
       terms.map! do |captures|
         selection_name = captures["selection_name"]&.text || captures["column_name"]&.text
 
-        if table_alias = captures["table_alias"]
+        if captures["all_fields"]
+          table = if table_alias = captures["table_alias"]
+            object_alias_map[table_alias.text]
+          elsif objects.size == 1
+            objects.first
+          end
+          Selection::AllFields.new(table)
+        elsif table_alias = captures["table_alias"]
           table = object_alias_map[table_alias.text]
           column_name = captures["column_name"].text
-          ColumnSelection.new(selection_name, table, column_name)
+          Selection::Column.new(selection_name, Column.new(table, column_name))
+        elsif (column_name = captures["column_name"]&.text) && objects.size == 1
+          table = objects.first
+          Selection::Column.new(selection_name, Column.new(table, column_name))
         elsif invocation = captures["invocation"]
-          InvocationSelection.new(selection_name, invocation)
-        elsif captures["all_fields"]
-          AllFieldsSelection.new
+          Selection::Invocation.new(selection_name, invocation)
         else
           raise "Unknown selection type"
         end
@@ -57,10 +66,11 @@ module SqlTools
               predicate: (_) @predicate)
         QUERY
 
-        predicate_builder = Predicate::Builder.new(self)
+        builder = Predicate::Builder.new(self)
         predicates = nodes.flat_map do |predicate|
-          PredicateVisitor.new(predicate).visit.clauses
-            .map { |p| predicate_builder.build(p) }
+          visitor = PredicateVisitor.new(predicate).visit
+          binding.b unless visitor.stack.size == 1
+          builder.build(visitor.stack.last)
         end.to_set
       end
     end

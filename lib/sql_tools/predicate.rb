@@ -3,22 +3,20 @@ module SqlTools
     Binary = Struct.new(:left, :operator, :right)
 
     class Builder
-      def initialize(view)
-        @view = view
+      def initialize(query)
+        @query = query
       end
 
-      def build(node)
-        case node.type
-        when :binary_expression
-          Binary.new(
-            type_from_node(node.left),
-            node.operator.text,
-            type_from_node(node.right),
-          )
-        when :field
-          type_from_node(node)
+      def build(predicate)
+        case predicate
+        when Predicate::Binary
+          predicate.left = build(predicate.left)
+          predicate.right = build(predicate.right)
+          predicate
+        when TreeStand::Node
+          type_from_node(predicate)
         else
-          raise "Unknown node type: #{node.type}"
+          raise "Unknown predicate: #{predicate}"
         end
       end
 
@@ -27,10 +25,11 @@ module SqlTools
       def type_from_node(node)
         case node.type
         when :field
-          if table_alias = node.find_node("(field (object_reference name: (identifier) @table_alias))")&.text
-            table = @view.object_alias_map.fetch(table_alias)
+          table = if table_alias = node.find_node("(field (object_reference name: (identifier) @table_alias))")&.text
+            @query.object_alias_map.fetch(table_alias)
+          elsif @query.objects.size == 1
+            @query.objects.first
           end
-          # table ||= @view.driving_table
           Column.new(table, node.name.text)
         when :literal
           node.text

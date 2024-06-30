@@ -18,7 +18,4 @@ module SqlTools
 
   Table = Data.define(:name, :alias)
   Column = Data.define(:table, :name)
-  ColumnSelection = Data.define(:name, :table, :column_name)
-  InvocationSelection = Data.define(:name, :invocation)
-  AllFieldsSelection = Data.define
 end
