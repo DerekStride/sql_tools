@@ -20,5 +20,9 @@ module SqlTools
     def on_from(node)
       @query.from = node
     end
+
+    def on_join(node)
+      @query.join_nodes << node
+    end
   end
 end

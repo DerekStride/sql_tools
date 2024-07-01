@@ -1,10 +1,11 @@
 module SqlTools
   class Query
-    attr_accessor :select, :from
+    attr_accessor :select, :from, :join_nodes
     attr_reader :common_table_expressions
 
     def initialize
       @common_table_expressions = {}
+      @join_nodes = []
     end
 
     def selections
@@ -46,6 +47,26 @@ module SqlTools
       end
     end
 
+    def joins
+      join_nodes.map do |join_node|
+        object_name = join_node.find_node(<<~QUERY).text
+          (join
+            (relation
+             (object_reference name: (identifier) @object_name)))
+        QUERY
+
+        filter = PredicateFilter.new(self)
+        object = object_alias_map[object_name]
+        predicate = filter.filter(object)
+
+        if join_node.children.any? { |child| child.type == :keyword_left }
+          LeftJoin.new(object, predicate)
+        else
+          InnerJoin.new(object, predicate)
+        end
+      end
+    end
+
     def relations
       objects.each_with_object({}) do |object, map|
         map[object] ||= []
@@ -56,8 +77,8 @@ module SqlTools
       end
     end
 
-    def predicates
-      @predicates ||= begin
+    def predicate
+      @predicate ||= begin
         nodes = from.query(<<~QUERY).map { |captures| captures["predicate"] }
           (from
             (join
@@ -71,7 +92,18 @@ module SqlTools
           visitor = PredicateVisitor.new(predicate).visit
           binding.b unless visitor.stack.size == 1
           builder.build(visitor.stack.last)
-        end.to_set
+        end
+
+        right = predicates.pop
+
+        # This needs to pluck the left & right from binary expressions & rebuild the tree.
+        # TODO: maybe this is the rotate algorithm, TBD
+        while left = predicates.pop
+          predicate = Predicate::Binary.new(left, "AND", right)
+          right = predicate
+        end
+
+        right
       end
     end
 

@@ -17,5 +17,8 @@ module SqlTools
   end
 
   Table = Data.define(:name, :alias)
-  Column = Data.define(:table, :name)
+  Column = Data.define(:table, :name) do
+    def to_s = "#{table.name}.#{name}"
+    def inspect = to_s
+  end
 end

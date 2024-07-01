@@ -1,6 +1,9 @@
 module SqlTools
   class Predicate
-    Binary = Struct.new(:left, :operator, :right)
+    Binary = Struct.new(:left, :operator, :right) do
+      def to_s = "(#{left} #{operator} #{right})"
+      def inspect = to_s
+    end
 
     class Builder
       def initialize(query)
