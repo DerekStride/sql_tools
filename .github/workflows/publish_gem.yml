@@ -1,5 +1,7 @@
 name: Publish new releases to rubygems
-on: release
+on:
+  release:
+    types: [released]
 
 jobs:
   publish:
