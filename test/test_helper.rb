@@ -16,7 +16,8 @@ TreeStand.configure do
 end
 
 module TreeStandHelper
-  def query_from_sql(sql) = SqlTools.query_from_tree(SqlTools.tree_from_sql(sql))
+  def query_from_sql(sql) = SqlTools.query_from_sql(sql)
+  def schema_from_sql(sql) = SqlTools.schema_from_sql(sql)
 end
 
 module Minitest
