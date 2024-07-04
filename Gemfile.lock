@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sql_tools (0.2.0)
+    sql_tools (0.2.2)
       ruby_tree_sitter (~> 1.0)
       zeitwerk
 
